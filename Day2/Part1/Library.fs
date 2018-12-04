@@ -1,6 +1,5 @@
 namespace Day2.Part1
 open System
-open System
 
 module Library =
 
@@ -25,9 +24,9 @@ module Library =
         (a + x, b + y)
 
     let calculateChecksum xs =
-       let result = xs
-                   |> Seq.map(fun x -> filterRepeatingCharacters(x))
-                   |> Seq.filter(fun x -> String.IsNullOrEmpty(x) <> true)
-                   |> Seq.map(fun x -> getScore x)
-                   |> Seq.reduce(fun (x, y)(a, b) -> (x+a, y+b))
-       fst(result) * snd(result)
+       let countTwo, countThree = xs
+                                   |> Seq.map(fun x -> filterRepeatingCharacters(x))
+                                   |> Seq.filter(fun x -> String.IsNullOrEmpty(x) <> true)
+                                   |> Seq.map(fun x -> getScore x)
+                                   |> Seq.reduce(fun (x, y)(a, b) -> (x+a, y+b))
+       countTwo * countThree

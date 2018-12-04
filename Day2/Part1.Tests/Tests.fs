@@ -2,8 +2,6 @@ namespace Day2.Part1
 
 open System
 open Xunit
-open Day2.Part1.Library
-open Microsoft.Extensions.DependencyModel
 
 module Tests =
     [<Fact>]

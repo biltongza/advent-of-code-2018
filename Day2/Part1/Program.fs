@@ -1,10 +1,9 @@
 ﻿open System
+open System.IO
 open Day2.Part1
 module Program =
     let [<EntryPoint>] main argv =
-      let text = "hello world"
-      let ch = 'l'
-      printfn "%d" (Library.count ch text)
-
-      Console.ReadLine() |> ignore
+      let input = File.ReadAllLines("..\input.txt")
+      let checksum = Library.calculateChecksum(input);
+      printfn "%i" checksum
       0

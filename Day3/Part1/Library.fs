@@ -25,7 +25,7 @@ module Library =
 
         {ID=id; OffsetX=offsetX; OffsetY=offsetY; Width=width; Height=height}
 
-    let getIntersectingArea claims =
+    let getClaimMap claims =
         let getBoundingBox claims =
             let minX = (claims |> Seq.minBy(fun c -> c.OffsetX)).OffsetX
             let minY = (claims |> Seq.minBy(fun c -> c.OffsetY)).OffsetY
@@ -36,20 +36,22 @@ module Library =
 
             {TopLeft = {X=minX; Y=maxY}; TopRight = {X = maxX; Y = maxY};  BottomLeft = {X = minX; Y = minY};  BottomRight = {X = maxX; Y = minY}}
 
-        let getCountOfClaimsOnSquare x y claims =
+        let getClaimsOnSquare x y claims =
             claims
             |> Seq.filter(fun c -> ((c.OffsetX <= x && (c.OffsetX + c.Width)  > x) && (c.OffsetY <= y && (c.OffsetY + c.Height) > y)))
-            |> Seq.length
+        let boundingBox = getBoundingBox claims
+
+        let claimMap = Array2D.create (boundingBox.TopRight.X - boundingBox.TopLeft.X) (boundingBox.TopLeft.Y - boundingBox.BottomLeft.Y) Seq.empty
+
+        claimMap |> Array2D.iteri(fun x y _ -> Array2D.set claimMap x y (getClaimsOnSquare x y claims))
+        claimMap
+
+    let getIntersectingArea claims =
+        let claimMap = getClaimMap claims
 
         let flatten2DArray array2D =
             seq { for x in [0..(Array2D.length1 array2D) - 1] do
                     for y in [0..(Array2D.length2 array2D) - 1] do
-                        yield array2D.[x, y] }
+                        yield (x, y, array2D.[x, y]) }
 
-        let boundingBox = getBoundingBox claims
-
-        let claimMap = Array2D.create (boundingBox.TopRight.X - boundingBox.TopLeft.X) (boundingBox.TopLeft.Y - boundingBox.BottomLeft.Y) 0
-
-        claimMap |> Array2D.iteri(fun x y _ -> Array2D.set claimMap x y (getCountOfClaimsOnSquare x y claims))
-
-        flatten2DArray claimMap |> Seq.filter(fun i -> i >= 2) |> Seq.length
+        flatten2DArray claimMap |> Seq.filter(fun (_, _, claims) -> (Seq.length claims) >= 2) |> Seq.length
